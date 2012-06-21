@@ -17,16 +17,20 @@
         <div class="nav-collapse">
           <ul class="nav">
             <li class="active"><a href="#">Trending</a></li>
-            <li><a href="#">Category1</a></li>
-            <li><a href="#">Category2</a></li>
-            <li><a href="#">Category3</a></li>
+            <li><a href="#!/toprated">Top Rated</a></li>
+            <li><a href="#!/topfavorites">Top Favorites</a></li>
+            <li><a href="#!/mostviewed">Most Viewed</a></li>
+            <li><a href="#!/mostpopular">Most Popular</a></li>
+            <li><a href="#!/mostdiscussed">Most Discussed</a></li>
+            <li><a href="#!/recentlyfeatured">Recently Featured</a></li>
           </ul>
           <form class="navbar-search pull-left" action="">
             <input type="text" class="search-query span2" placeholder="Search">
-          </form>
+          </form><!--
           <ul class="nav pull-right">
             <li><a href="#">About</a></li>
-          </ul>
+          </ul
+      -->
         </div><!-- /.nav-collapse -->
       </div>
     </div><!-- /navbar-inner -->
@@ -42,20 +46,25 @@
 
 <!-- libs -->
 <script src="/static/jquery-1.7.2.js"></script>
+<script src="/static/underscore.js"></script>
 <script src="/static/backbone.js"></script>
 <script src="/static/bootstrap/js/bootstrap.js"></script>
+<script src="/static/jquery.imagesloaded.min.js"></script>
 <script src="/static/jquery.isotope.min.js"></script>
 
 <!-- modules -->
-<script src="/static/modules/application.js"></script>
+<script type="text/javascript">
+if(typeof YT === 'undefined'){
+    var YT = {};
+}
+</script>
 <script src="/static/modules/video.js"></script>
 <script src="/static/modules/router.js"></script>
+<script src="/static/modules/app.js"></script>
 
 <!-- templates -->
 <script type="text/template" id="videoTemplate">
-    <div class="box">
-        <%= title %>
-    </div>
+        <img src="<%= thumbnail %>" />
 </script>
 
 </body>

@@ -4,19 +4,20 @@ if(typeof YT === 'undefined'){
 
 $(YT).unbind('arrange');
 $(YT).bind('arrange', function(event, params){
-    $('#hypeHolderInner').imagesLoaded( function(){
-        $('#hypeHolder').css('display', 'block');
-        $('#hypeHolderInner').isotope({
-            itemSelector : '.contentColBox',
-            isFitWidth: true,
+    console.log('arrange');
+    //$('#videoHolder').css('opacity','0');
+    $('#videoHolder').isotope('destroy');
+    $('#videoHolder').imagesLoaded( function(){
+        console.log('in here');
+        $('#videoHolder').isotope({
+            itemSelector : '.box',
             masonry:{
-                columnWidth:250
+                columnWidth:300
             }
         }, function(items){
-            //console.log('here here');
-            //console.log(items);
-            items.fadeTo('fast', 1);
-            $('.contentColBox').fadeTo('fast', 1);
+            console.log('callback');
+            //items.fadeTo('fast', 1);
+            //$('#videoHolder').fadeTo('fast', 1);
         });
     });
     
