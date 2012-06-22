@@ -1,9 +1,11 @@
 <!doctype html>
+<html>
 <head>
 <title>ytinterest</title>
 <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.css" type="text/css" />
 <link rel="stylesheet" href="/static/css/main.css" type="text/css" />
 </head>
+<div id="overlay"></div>
 <body>
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
@@ -16,13 +18,12 @@
         <a class="brand" href="#">ytinterest</a>
         <div class="nav-collapse">
           <ul class="nav">
-            <li class="active"><a href="#">Trending</a></li>
-            <li><a href="#!/toprated">Top Rated</a></li>
-            <li><a href="#!/topfavorites">Top Favorites</a></li>
-            <li><a href="#!/mostviewed">Most Viewed</a></li>
-            <li><a href="#!/mostpopular">Most Popular</a></li>
-            <li><a href="#!/mostdiscussed">Most Discussed</a></li>
-            <li><a href="#!/recentlyfeatured">Recently Featured</a></li>
+            <li class="trending active"><a href="#">Trending</a></li>
+            <li class="toprated"><a href="#!/toprated">Top Rated</a></li>
+            <li class="topfavorites"><a href="#!/topfavorites">Top Favorites</a></li>
+            <li class="mostviewed"><a href="#!/mostviewed">Most Viewed</a></li>
+            <li class="mostpopular"><a href="#!/mostpopular">Most Popular</a></li>
+            <li class="recentlyfeatured"><a href="#!/recentlyfeatured">Recently Featured</a></li>
           </ul>
           <form class="navbar-search pull-left" action="">
             <input type="text" class="search-query span2" placeholder="Search">
@@ -38,11 +39,13 @@
 
 
 
-<div class="container-fluid">
+<div class="container stage">
 
     <div id="videoHolder"></div>
 
 </div>
+
+
 
 <!-- libs -->
 <script src="/static/jquery-1.7.2.js"></script>
@@ -61,10 +64,52 @@ if(typeof YT === 'undefined'){
 <script src="/static/modules/video.js"></script>
 <script src="/static/modules/router.js"></script>
 <script src="/static/modules/app.js"></script>
+<script src="/static/modules/fluidWidth.js"></script>
 
 <!-- templates -->
 <script type="text/template" id="videoTemplate">
-        <img src="<%= thumbnail %>" />
+<div class="box-inner">
+    <div class="box-image" style="background-image:url('<%= thumbnail %>')">
+    </div>
+    <div class="box-image-overlay">
+    </div>
+    <div class="box-title">
+        <%= title %>
+    </div>
+    <div class="box-authorName">
+        By: <%= authorName %>
+    </div>
+    <div class="box-stats">
+        <div class="box-viewCount">
+            <i class="icon-heart"></i><%= viewCount %>
+        </div>
+        <div class="box-favoriteCount">
+            <i class="icon-star"></i><%= favoriteCount %>
+        </div>
+    </div>
+</div>
 </script>
 
+<script type="text/template" id="videoModalTemplate">
+<div class="videoModal modal">
+    <div id="videoModalInner">
+        <header style="height:35px; padding-top:8px; background: #3A3A3A; color:white; width:100%;opacity:1;">
+            <div id="wrap_header" style="padding-right:5em; width:100%; position:relative; margin:0px auto; ">                
+                    <div class="logo_text" style"position:absolute;left:16px;top:-4px;">
+                    ytinterest
+                    </div>
+                <div class="close clickable">close</div>                
+            </div>                
+        </header>
+
+        <div class="videoModalContent" class="clearfix">
+        </div>
+
+    </div>
+</div>
+
+</script>
+
+
 </body>
+</html>

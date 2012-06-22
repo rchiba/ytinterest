@@ -1,18 +1,148 @@
+html {
+background:  #F7F5F5 url(/static/i/paper.jpg) repeat;
+}
+
 body{
     margin-top:40px;
+    background-color:transparent;
+}
+
+.navbar-fixed-top{
+    background-color:#FAF7F7 !important;
+    height:45px !important;
+}
+
+.clickable{
+    cursor:pointer;
+    cursor: hand;
 }
 
 .box{
-    width:250px;
-    height:300px;
-    background-color:#ace;
-    margin-top:20px;
+    width: 222px;
+    margin-top: 10px;
+    background-color: white;
+    box-shadow: rgba(34, 25, 25, 0.398438) 0px 1px 3px 0px;
 }
+    .box-inner{
+        padding:15px;
+    }
+
+    .box-image{
+        width: 100%;
+        height: 140px;
+        background-size: 140%;
+        background-position-x: center;
+        background-position-y: -30px;
+        background-repeat: no-repeat;
+        
+    }
+        .box-image-overlay{
+            width:100%;
+            position:absolute;
+            top:0;
+            left:0;
+            background-image: url(/static/i/videoOverlay.png);
+            background-position:center;
+            height: 170px;
+            background-size: 50%;
+            background-repeat: no-repeat;
+            opacity: .2;
+            cursor:pointer;
+            cursor:hand;
+        }
+
+        .box-image-overlay:hover{
+            opacity:.7;
+        }
+
+    .box-title{
+        padding:10px 0;
+        font-size:11px;
+        line-height:14px;
+        word-wrap: break-word;
+    }
+
+    .box-authorName{
+        font-size: 11px;
+    }
+
+    .box-stats{
+        height: 20px;
+        padding-top:10px;
+    }
+        .box-stats i{
+            margin-top:1px;
+        }
+
+    .box-viewCount{
+        float: left;
+    }
+
+    .box-favoriteCount{
+        float: left;
+        margin-left:10px;
+    }
 
 #videoHolder{
     width:100%;
 }
 
+
+/**** Modal ****/
+
+.modal{
+    display: none;
+    z-index: 9999999999;
+    position: fixed;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    background: rgba(249, 255, 249, 0.7);
+    -webkit-border-radius: 7px;
+    -moz-border-radius: 7px;
+    border-radius: 7px;
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+}
+
+.videoModal{
+    top:50%; 
+    left:50%;
+    margin-top:-187px;
+    margin-left:-330px;
+    width:640px; 
+    height:355px; 
+    padding:10px;
+    overflow:hidden;
+    position:fixed;
+    z-index:9999;
+
+}
+    .videoModal .logo_text{
+        padding: 2px 13px;
+        font-size: 20px;
+    }
+
+    .videoModal .close{
+        position: absolute;
+        right: 77px;
+        top: 2px;
+    }
+
+    .videoModalContent{
+        background-color:#FFF;
+
+    }
+
+
+#overlay{
+   display:none;
+   background-color: #000;
+   opacity: .7;
+   filter: alpha(opacity=70);
+   position: absolute; top: 0; left: 0;
+   width: 100%; height: 100%;
+   z-index: 999;
+}
 
 
 /**** Isotope Filtering ****/
