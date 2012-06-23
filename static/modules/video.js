@@ -8,37 +8,64 @@ YT.VideoCollection = Backbone.Collection.extend({
         
     },
 
-    pull: function(url){
-        this.url = url;
-        // call the google endpoint, populate internal models array
-        console.log('initialized with url :'+this.url);
+    // called with initial data on load
+    // creates models out of this initial data
+    // string json -> models
+    addToModels: function(data){
         var that = this;
-        $.get(this.url, {}, function(xml){
-            $('entry', xml).each(function(i){
-                // title was weird, it was duplicated
-                var titleText = $(this).find('title').text();
-                var title = titleText.substring(0,titleText.length/2);
-                var video = new YT.Video({
-                    'id': $(this).find('id').text(),
-                    'published': $(this).find('published').text(),
-                    'title': title,
-                    'authorName': $(this).find('author name').text(),
-                    'authorURI': $(this).find('author uri').text(),
-                    'favoriteCount': $(this).find('[nodeName="yt:statistics"],statistics').attr('favoriteCount'),
-                    'viewCount': $(this).find('[nodeName="yt:statistics"],statistics').attr('viewCount'),
-                    'url': $(this).find('[nodeName="media:player"],player').attr('url'),
-                    'thumbnail': $(this).find('[nodeName="media:thumbnail"],thumbnail').attr('url'),
-                    'embedCode': that.videoUrlToEmbedCode( $(this).find('[nodeName="media:player"],player').attr('url') )
-                });
-                that.models.push(video);
-            });
-            //console.log(that.models);
-            that.trigger('change');
+        this.data = data;
 
+        // save the next url for infinite scroll
+        var links = data.feed.link;
+        this.next = null;
+        for( var i = 0; i < links.length; i++ ){
+            if( links[i].rel === 'next' ){
+                that.next = links[i].href.replace('json-in-script', 'json');
+            }
+        }
+
+        // load all the data as models
+        _.each(data.feed.entry, function(entry, index){
+
+            // get the largest thumbnail
+            var thumbs = entry['media$group']['media$thumbnail'];
+            var thumbnail = null;
+            var maxSize = 0;
+            _.each(thumbs, function(thumb, index){
+                var size = thumb.height * thumb.width;
+                if(size > maxSize){
+                    thumbnail = thumb;
+                    maxSize = size;
+                }
+            });
+
+
+            var video = new YT.Video({
+                'id': entry.id.$t,
+                'published': entry.published.$t,
+                'title': entry.title.$t,
+                'authorName': entry.author[0].name.$t,
+                'authorURI': entry.author[0].uri.$t,
+                'favoriteCount': entry['yt$statistics'].favoriteCount,
+                'viewCount': entry['yt$statistics'].viewCount,
+                'url': entry['media$group']['media$player'].url,
+                'thumbnail': thumbnail.url,
+                'likes': entry['yt$rating'].numLikes,
+                'dislikes': entry['yt$rating'].numDislikes,
+                'embedCode': that.videoUrlToEmbedCode(entry['media$group']['media$player'].url)
+            });
+            that.models.push(video);
         });
+
+    },
+
+    // sets url for future calls
+    setUrl: function(url){
+        this.url = url;
     },
 
     videoUrlToEmbedCode: function(url){
+
         var matches = [];
         var youtubeRegex = /youtube.com\/watch\?.*v=.*/g;
         var vimeoRegex = /vimeo.com\/[\d\w]+/g;
@@ -92,11 +119,10 @@ YT.VideoCollection = Backbone.Collection.extend({
 YT.VideoHolderView = Backbone.View.extend({
 
     el: $('#videoHolder'),
+    buffer: 200, // pixels from bottom before we fetch
     initialize: function() {
         this.model.bind("change", this.render, this);
-        var that = this;
-        
-
+        return this;
     },
 
     render: function(eventName) {
@@ -110,10 +136,35 @@ YT.VideoHolderView = Backbone.View.extend({
         _.each(this.model.models, function(vid, index) {
             $(this.el).append(new YT.VideoView({model: vid}).render().el);
         }, this);
-
         $(YT).trigger('arrange');
+
+        this.bind();
+
         return this;
+    },
+
+    bind: function(){
+        var that = this;
+
+        $(window).unbind('scroll').scroll(function(){
+            if( that.windowAtBottom() ){
+                if( that.lock ){
+                    that.getLinks(function(){
+                        that.renderAppend();
+                        that.bind();
+                    });
+                    
+                }
+            }
+        });
+    },
+
+    // the condition that determines when to call server
+    windowAtBottom: function(){
+        var w = $(window);
+        return (w.scrollTop() >= $(document).height() - w.height() - this.buffer);
     }
+
 
 });
 

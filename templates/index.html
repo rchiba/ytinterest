@@ -55,12 +55,70 @@
 <script src="/static/jquery.imagesloaded.min.js"></script>
 <script src="/static/jquery.isotope.min.js"></script>
 
-<!-- modules -->
+<!-- youtube -->
 <script type="text/javascript">
 if(typeof YT === 'undefined'){
     var YT = {};
 }
+
+YT.loadTrending = function(data){
+    YT.trending = data;
+}
+
+YT.loadTopRated = function(data){
+    YT.topRated = data;
+}
+
+YT.loadTopFavorites = function(data){
+    YT.topFavorites = data;
+}
+
+YT.loadMostViewed = function(data){
+    YT.mostViewed = data;
+}
+
+YT.loadMostPopular = function(data){
+    YT.mostPopular = data;
+}
+
+YT.loadRecentlyFeatured = function(data){
+    YT.recentlyFeatured = data;
+}
+
 </script>
+
+<script 
+    type="text/javascript" 
+    src="https://gdata.youtube.com/feeds/api/standardfeeds/on_the_web?v=2&alt=json-in-script&format=5&callback=YT.loadTrending">
+</script>
+
+<script 
+    type="text/javascript" 
+    src="https://gdata.youtube.com/feeds/api/standardfeeds/top_rated?time=today&v=2&alt=json-in-script&format=5&callback=YT.loadTopRated">
+</script>
+
+<script 
+    type="text/javascript" 
+    src="https://gdata.youtube.com/feeds/api/standardfeeds/top_favorites?time=today&v=2&alt=json-in-script&format=5&callback=YT.loadTopFavorites">
+</script>
+
+<script 
+    type="text/javascript" 
+    src="https://gdata.youtube.com/feeds/api/standardfeeds/most_viewed?time=today&v=2&alt=json-in-script&format=5&callback=YT.loadMostViewed">
+</script>
+
+<script 
+    type="text/javascript" 
+    src="https://gdata.youtube.com/feeds/api/standardfeeds/most_popular?time=today&v=2&alt=json-in-script&format=5&callback=YT.loadMostPopular">
+</script>
+
+<script 
+    type="text/javascript" 
+    src="https://gdata.youtube.com/feeds/api/standardfeeds/recently_featured?v=2&alt=json-in-script&format=5&callback=YT.loadRecentlyFeatured">
+</script>
+
+
+<!-- modules -->
 <script src="/static/modules/video.js"></script>
 <script src="/static/modules/router.js"></script>
 <script src="/static/modules/app.js"></script>
