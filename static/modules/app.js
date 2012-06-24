@@ -75,7 +75,7 @@ YT.getParameter = function(paramName, url) {
 
 // Application Hook
 $(document).ready(function(){
+    this.FluidWidth = new YT.FluidWidthModule();
     YT.App = new YT.AppRouter();
     Backbone.history.start();
-    this.FluidWidth = new YT.FluidWidthModule();
 });

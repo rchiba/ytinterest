@@ -8,7 +8,7 @@ YT.FluidWidthModule = (function (window) {
         // how many columns can fit on the current page
         colsFit:-1,
         // how much extra space we want on the sides
-        buffer: 60
+        buffer: 50
     };
 
     // constructor

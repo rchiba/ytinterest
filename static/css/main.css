@@ -12,9 +12,28 @@ body{
     height:45px !important;
 }
 
+input.search-query{
+    width:210px;
+}
+
+input.search-query.active{
+    color:white !important;
+    background-color:#CB2027 !important;
+    font-weight:bold !important;
+}
+
 .clickable{
     cursor:pointer;
     cursor: hand;
+}
+
+.containerTitle{
+    font-size: 22px;
+    line-height: 22px;
+    padding-top: 30px;
+    text-align: center;
+    padding-bottom: 10px;
+    display:none;
 }
 
 .box{

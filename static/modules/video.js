@@ -4,6 +4,7 @@ YT.Video = Backbone.Model.extend({
 
 YT.VideoCollection = Backbone.Collection.extend({
     model: YT.Video,
+    runningRequest: false, // keeps track of whether search is in progress or not
     initialize: function(params){
         
     },
@@ -11,7 +12,8 @@ YT.VideoCollection = Backbone.Collection.extend({
     // called with initial data on load
     // creates models out of this initial data
     // string json -> models
-    addToModels: function(data, callback){
+    // replaceModels - a bool used to determine whether I should append or replace the models
+    addToModels: function(data, callback, replaceModels){
         var that = this;
         this.data = data;
 
@@ -22,6 +24,11 @@ YT.VideoCollection = Backbone.Collection.extend({
             if( links[i].rel === 'next' ){
                 that.next = links[i].href.replace('json-in-script', 'json');
             }
+        }
+
+        // replace models if needed
+        if( replaceModels ){
+            this.models = [];
         }
 
         // load all the data as models
@@ -39,12 +46,15 @@ YT.VideoCollection = Backbone.Collection.extend({
                 }
             });
 
-            console.log(entry);
-
-            var numLikes, numDislikes;
-            if(typeof entry['yt$rating'] !== 'undefined'){
+            var numLikes, numDislikes, favoriteCount, viewCount;
+            if( typeof entry['yt$rating'] !== 'undefined' ){
                 numLikes = entry['yt$rating'].numLikes;
                 numDislikes = entry['yt$rating'].numDislikes;
+            }
+
+            if( typeof entry['yt$statistics'] !== 'undefined' ){
+                favoriteCount = entry['yt$statistics'].favoriteCount;
+                viewCount= entry['yt$statistics'].viewCount;
             }
 
             var video = new YT.Video({
@@ -53,8 +63,8 @@ YT.VideoCollection = Backbone.Collection.extend({
                 'title': entry.title.$t,
                 'authorName': entry.author[0].name.$t,
                 'authorURI': entry.author[0].uri.$t,
-                'favoriteCount': entry['yt$statistics'].favoriteCount,
-                'viewCount': entry['yt$statistics'].viewCount,
+                'favoriteCount': favoriteCount,
+                'viewCount': viewCount,
                 'url': entry['media$group']['media$player'].url,
                 'thumbnail': thumbnail.url,
                 'likes': numLikes,
@@ -83,6 +93,38 @@ YT.VideoCollection = Backbone.Collection.extend({
                 //console.log('response data is ');
                 //console.log(responseData);
                 that.addToModels(responseData, callback);
+            }
+        });
+    },
+
+    // replaces all models in collection with whatever the server returns for the query in the input
+    searchServer: function(query, callback){
+
+        var that = this;
+
+        //Abort opened requests to speed it up
+        if(this.runningRequest){
+            this.request.abort();
+        }
+
+        this.runningRequest=true;
+        var searchUrl = '\
+https://gdata.youtube.com/feeds/api/videos?\
+q='+encodeURIComponent(query.trim())+'\
+&orderby=relevance\
+&max-results=25\
+&v=2\
+&alt=json';
+        //console.log('searchUrl: '+searchUrl);
+        this.request = $.ajax({
+            type: "GET",
+            url: searchUrl,
+            dataType:"jsonp",
+            success:function(responseData,textStatus,XMLHttpRequest){
+                //console.log('search returned with ');
+                //console.log(responseData);
+                that.addToModels(responseData, callback, true);
+                that.runningRequest=false;
             }
         });
     },
@@ -201,6 +243,32 @@ YT.VideoHolderView = Backbone.View.extend({
                 }
             }
         });
+
+       // Search
+       $('input.search-query').unbind('keyup').keyup(function(e){
+            e.preventDefault();
+            // check if box is empty or if backspace key was pressed
+            var $q = $(this);
+            if($q.val() === '' || e.keyCode == 8){
+                return false;
+            }
+
+            // switch the url to reflect page
+            window.location.href = "#!/search";
+
+            // edit the title
+            $('.containerTitle').html("Search results for '<b>"+$q.val()+"</b>'");
+
+            // ask collection to replace models with search query results
+            $('#bottomLoader').fadeIn();
+            that.model.searchServer($q.val(), function(){
+                that.render();
+                $(YT).trigger('arrange');
+                $('#bottomLoader').fadeOut();
+            });
+
+        });
+
     },
 
     // the condition that determines when to call server
