@@ -45,12 +45,6 @@ $(YT).bind('arrangeReload', function(event, params){
     });
 });
 
-
-// IE BUG
-if (typeof console == "undefined") {
-    this.console = {log: function() {}};
-}
-
 // Getting a url parameter
 YT.getParameter = function(paramName, url) {
 

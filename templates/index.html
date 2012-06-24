@@ -24,6 +24,13 @@
 
 
 <script type="text/javascript">
+// IE BUG
+if (typeof console == "undefined") {
+    this.console = {log: function() {}};
+}
+</script>
+
+<script type="text/javascript">
 
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-32886312-1']);
