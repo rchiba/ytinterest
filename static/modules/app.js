@@ -25,9 +25,24 @@ $(YT).bind('arrange', function(event, params){
     
 });
 
+$(YT).unbind('arrangeAppend');
+$(YT).bind('arrangeAppend', function(event, params){
+    console.log('arrangeAppend');
+    // check to see if we have any appended hypes,
+    // since otherwise isotope callback won't fire
+    var appended = $('.box').not('.isotope-item');
+    $('#videoHolder').isotope('appended', appended, function(items){
+        // fade in the newly arranged items
+        //items.fadeTo('fast', 1);
+        //$('#hypeBottomLoading').fadeOut();
+    });
+});
+
 $(YT).unbind('arrangeReload');
 $(YT).bind('arrangeReload', function(event, params){
-    $('#hypeHolderInner').isotope('reLayout');
+    $('#videoHolder').imagesLoaded( function(){
+        $('#videoHolder').isotope('reLayout');
+    });
 });
 
 

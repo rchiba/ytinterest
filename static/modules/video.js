@@ -11,7 +11,7 @@ YT.VideoCollection = Backbone.Collection.extend({
     // called with initial data on load
     // creates models out of this initial data
     // string json -> models
-    addToModels: function(data){
+    addToModels: function(data, callback){
         var that = this;
         this.data = data;
 
@@ -39,6 +39,13 @@ YT.VideoCollection = Backbone.Collection.extend({
                 }
             });
 
+            console.log(entry);
+
+            var numLikes, numDislikes;
+            if(typeof entry['yt$rating'] !== 'undefined'){
+                numLikes = entry['yt$rating'].numLikes;
+                numDislikes = entry['yt$rating'].numDislikes;
+            }
 
             var video = new YT.Video({
                 'id': entry.id.$t,
@@ -50,20 +57,37 @@ YT.VideoCollection = Backbone.Collection.extend({
                 'viewCount': entry['yt$statistics'].viewCount,
                 'url': entry['media$group']['media$player'].url,
                 'thumbnail': thumbnail.url,
-                'likes': entry['yt$rating'].numLikes,
-                'dislikes': entry['yt$rating'].numDislikes,
+                'likes': numLikes,
+                'dislikes': numDislikes,
                 'embedCode': that.videoUrlToEmbedCode(entry['media$group']['media$player'].url)
             });
             that.models.push(video);
+            
         });
 
+        if( typeof callback === 'function' ){
+            callback();
+        }
+
     },
 
-    // sets url for future calls
-    setUrl: function(url){
-        this.url = url;
+    // uses this.next url to call server and add to models
+    callServer: function(callback){
+        var that = this;
+
+        $.ajax({
+            type:"GET",
+            url:this.next,
+            dataType:"jsonp",
+            success:function(responseData,textStatus,XMLHttpRequest){
+                //console.log('response data is ');
+                //console.log(responseData);
+                that.addToModels(responseData, callback);
+            }
+        });
     },
 
+    // helper function to convert url to embed code
     videoUrlToEmbedCode: function(url){
 
         var matches = [];
@@ -120,6 +144,7 @@ YT.VideoHolderView = Backbone.View.extend({
 
     el: $('#videoHolder'),
     buffer: 200, // pixels from bottom before we fetch
+    lock: true, // keeps us from making more than one call at a time
     initialize: function() {
         this.model.bind("change", this.render, this);
         return this;
@@ -136,9 +161,25 @@ YT.VideoHolderView = Backbone.View.extend({
         _.each(this.model.models, function(vid, index) {
             $(this.el).append(new YT.VideoView({model: vid}).render().el);
         }, this);
-        $(YT).trigger('arrange');
+
+        // used to keep track of where to start in renderAppend
+        YT.lastModelCount = this.model.models.length;
 
         this.bind();
+
+        return this;
+    },
+
+    // called by callback given to bind
+    renderAppend: function(eventName){
+
+        for(var i = YT.lastModelCount; i < this.model.models.length; i++){
+            var vid = this.model.models[i];
+            $(this.el).append(new YT.VideoView({model: vid}).render().el);
+        }
+        YT.lastModelCount = this.model.models.length;
+        
+        $(YT).trigger('arrangeAppend');
 
         return this;
     },
@@ -149,11 +190,14 @@ YT.VideoHolderView = Backbone.View.extend({
         $(window).unbind('scroll').scroll(function(){
             if( that.windowAtBottom() ){
                 if( that.lock ){
-                    that.getLinks(function(){
+                    that.lock = false;
+                    $('#bottomLoader').fadeIn();
+                    that.model.callServer(function(){
+                        that.lock = true;
                         that.renderAppend();
-                        that.bind();
+                        $(YT).trigger('arrangeAppend');
+                        $('#bottomLoader').fadeOut();
                     });
-                    
                 }
             }
         });

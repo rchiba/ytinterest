@@ -87,6 +87,23 @@ body{
     width:100%;
 }
 
+#bottomLoader{
+    width: 180px;
+    height: 20px;
+    background-color: 
+    #CB2027;
+    color: 
+    white;
+    position: fixed;
+    bottom: 0px;
+    left: 50%;
+    margin-left: -100px;
+    z-index: 9;
+    padding: 10px;
+    font-size: 20px;
+    text-align: center;
+    display:none;
+}
 
 /**** Modal ****/
 
