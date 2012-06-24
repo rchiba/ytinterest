@@ -7,7 +7,7 @@ YT.colWidth = 232;
 
 $(YT).unbind('arrange');
 $(YT).bind('arrange', function(event, params){
-    console.log('arrange');
+    //console.log('arrange');
     //$('#videoHolder').css('opacity','0');
     $('#videoHolder').isotope('destroy');
     $('#videoHolder').imagesLoaded( function(){
@@ -17,7 +17,7 @@ $(YT).bind('arrange', function(event, params){
                 columnWidth:YT.colWidth
             }
         }, function(items){
-            console.log('callback');
+            //console.log('callback');
             //items.fadeTo('fast', 1);
             //$('#videoHolder').fadeTo('fast', 1);
         });
@@ -27,7 +27,7 @@ $(YT).bind('arrange', function(event, params){
 
 $(YT).unbind('arrangeAppend');
 $(YT).bind('arrangeAppend', function(event, params){
-    console.log('arrangeAppend');
+    //console.log('arrangeAppend');
     // check to see if we have any appended hypes,
     // since otherwise isotope callback won't fire
     var appended = $('.box').not('.isotope-item');
