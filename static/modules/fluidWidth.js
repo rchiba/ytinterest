@@ -52,7 +52,7 @@ YT.FluidWidthModule = (function (window) {
         $(window).resize(determineIfWeNeedToCallResize);
 
         // trigger for calling it from modules
-        $(YT).bind('resize', that.resize.bind(that));
+        //$(YT).bind('resize', that.resize.bind(that));
     }
     
     module.prototype = {
